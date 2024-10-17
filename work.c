@@ -17,7 +17,7 @@ int studentCount = 0;
 void greetUser() {
     char name[500];
     printf("Welcome to the Student Record System!\n");
-    printf("Please enter your name: ");
+    printf("Please enter your firstname : ");
     scanf("%499s", name);
     printf("Hello, %s!\n", name);
 }
@@ -29,7 +29,9 @@ void addStudent() {
     }
 
     Student newStudent;
-    printf("Enter student name: ");
+    printf("Enter student fristname: ");
+    scanf("%49s", newStudent.name);
+    printf("Enter student lastname: ");
     scanf("%49s", newStudent.name);
     printf("Enter roll number: ");
     scanf("%d", &newStudent.rollNumber);
