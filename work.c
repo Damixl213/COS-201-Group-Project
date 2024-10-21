@@ -1,9 +1,26 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 #define MAX_STUDENTS 100
 #define PASSING_THRESHOLD 40
+
+
+char calculate_grade() {
+    int score;
+    if (score > 79 && score <= 100) {
+        return 'A';
+    } else if (score > 69 && score <= 79) {
+        return 'B';
+    } else if (score > 59 && score <= 69) {
+        return 'C';
+    } else if (score > 49 && score <= 59) {
+        return 'D';
+    } else if (score >= 0 && score <= 49) {
+        return 'F';
+    } else {
+        return 'I'; // Invalid score indicator
+    }
+}
 
 typedef struct {
     char name[50];
@@ -11,28 +28,47 @@ typedef struct {
     int marks;
 } Student;
 
-Student students[MAX_STUDENTS];
+Student *students = NULL;
 int studentCount = 0;
+int maxStudents = 10;
 
 void greetUser() {
-    char name[500];
+    char name[100];
     printf("Welcome to the Student Record System!\n");
-    printf("Please enter your firstname : ");
-    scanf("%499s", name);
+    printf("Please enter your name: ");
+    scanf("%99s", name);
     printf("Hello, %s!\n", name);
+    
+    int age;
+    printf("Your age: ");
+    scanf("%d", &age);
+    if (age < 17) {
+        printf("You are too young to for this program.\n");
+        exit(1);
+    } 
+    else if (age > 17) {
+        printf("You are welcome to the program.\n");
+    }
+    else {
+        printf("You are welcome to the program.\n");
+    }
 }
 
 void addStudent() {
-    if (studentCount >= MAX_STUDENTS) {
-        printf("Maximum number of students reached.\n");
-        return;
+    if (studentCount >= maxStudents) {
+        maxStudents *= 2;
+        students = realloc(students, maxStudents * sizeof(Student));
+        if (students == NULL) {
+            printf("Memory allocation failed.\n");
+            exit(1);
+        }
     }
 
     Student newStudent;
-    printf("Enter student fristname: ");
+    printf("Enter student firstname: ");
     scanf("%49s", newStudent.name);
     printf("Enter student lastname: ");
-    scanf("%49s", newStudent.name);
+    scanf("%49s", newStudent.name + strlen(newStudent.name));
     printf("Enter roll number: ");
     scanf("%d", &newStudent.rollNumber);
     printf("Enter marks: ");
@@ -103,6 +139,14 @@ void loadStudentsFromFile() {
     studentCount = 0;
     while (fscanf(file, "%s %d %d", students[studentCount].name, &students[studentCount].rollNumber, &students[studentCount].marks) != EOF) {
         studentCount++;
+        if (studentCount >= maxStudents) {
+            maxStudents *= 2;
+            students = realloc(students, maxStudents * sizeof(Student));
+            if (students == NULL) {
+                printf("Memory allocation failed.\n");
+                exit(1);
+            }
+        }
     }
 
     fclose(file);
@@ -111,7 +155,7 @@ void loadStudentsFromFile() {
 
 void searchStudent() {
     int rollNumber;
-    printf("Enter roll number of the student to search: ");
+    printf("Pleae enter the student roll number : ");
     scanf("%d", &rollNumber);
 
     for (int i = 0; i < studentCount; i++) {
@@ -127,7 +171,7 @@ void searchStudent() {
         }
     }
 
-    printf("Student with roll number %d not found.\n", rollNumber);
+    printf("Student with roll number %d not found.\n", rollNumber, "please try again 😥.\n");
 }
 
 void calculateAverageMarks() {
@@ -173,6 +217,12 @@ void sortStudents() {
 }
 
 int main() {
+    students = malloc(maxStudents * sizeof(Student));
+    if (students == NULL) {
+        printf("Memory allocation failed.\n");
+        return 1;
+    }
+
     greetUser();
 
     int choice;
@@ -186,9 +236,14 @@ int main() {
         printf("6. Search Student\n");
         printf("7. Calculate Average Marks\n");
         printf("8. Sort Students by Marks\n");
-        printf("9. Exit\n");
+        printf("9. calculate your Gp\n");
+        printf("10. Exit\n");
         printf("Enter your choice: ");
-        scanf("%d", &choice);
+        if (scanf("%d", &choice) != 1) {
+            printf("Invalid input. Please enter a number.\n");
+            while (getchar() != '\n'); // Clear the input buffer
+            continue;
+        }
 
         switch (choice) {
             case 1:
@@ -216,6 +271,9 @@ int main() {
                 sortStudents();
                 break;
             case 9:
+                calculate_grade();
+                break;
+            case 10:
                 printf("Exiting program.\n");
                 break;
             default:
@@ -223,5 +281,6 @@ int main() {
         }
     } while (choice != 9);
 
+    free(students);
     return 0;
 }
